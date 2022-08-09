@@ -10,6 +10,11 @@ export interface Authentication {
     pass: string;
     sendImmediately: boolean;
 }
+export declare type AmbilightStyle = 'FOLLOW_COLOR' | 'FOLLOW_VIDEO' | 'FOLLOW_AUDIO';
+export declare type AmbilightColorSetting = 'HOT_LAVA' | 'ISF' | 'PTA_LOUNGE' | 'FRESH_NATURE' | 'DEEP_WATER';
+export declare type AmbilightVideoSetting = 'STANDARD' | 'NATURAL' | 'VIVID' | 'GAME' | 'COMFORT' | 'RELAX';
+export declare type AmbilightAudioSetting = 'ENERGY_ADAPTIVE_BRIGHTNESS' | 'ENERGY_ADAPTIVE_COLORS' | 'VU_METER' | 'SPECTRUM_ANALYZER' | 'KNIGHT_RIDER_CLOCKWISE' | 'KNIGHT_RIDER_ALTERNATING' | 'RANDOM_PIXEL_FLASH' | 'STROBO' | 'PARTY' | 'MODE_RANDOM';
+export declare type AmbilightSetting = AmbilightAudioSetting | AmbilightColorSetting | AmbilightVideoSetting;
 export declare class PhilipsTVChannels {
     channels: Channel[];
     reloadChannels(listChannels: string): void;
@@ -50,6 +55,10 @@ export declare class PhilipsTV {
     sendKey(key: string): Promise<string>;
     launchApplication(application: Record<string, string>): Promise<string>;
     launchTVChannel(application: Record<string, string>): Promise<string>;
+    setAmbilightPlusHueState(state: boolean): Promise<any>;
+    getAmbilightPlusHueState(): Promise<boolean>;
+    getAmbilightState(): Promise<boolean>;
+    setAmbilightState(state: boolean, style?: AmbilightStyle, setting?: AmbilightSetting): Promise<any>;
     turnOn(counter?: number): Promise<void>;
     wakeUntilAPIReady(counter?: number): Promise<any>;
 }

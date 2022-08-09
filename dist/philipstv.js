@@ -230,6 +230,36 @@ class PhilipsTV {
         const url = `https://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/activities/tv`;
         return requestHelpers_1.post(url, JSON.stringify(application), this.auth);
     }
+    async setAmbilightPlusHueState(state) {
+        const url = `https://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/HueLamp/power`;
+        return requestHelpers_1.post(url, JSON.stringify({ power: state ? 'On' : 'Off' }), this.auth);
+    }
+    async getAmbilightPlusHueState() {
+        const url = `https://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/HueLamp/power`;
+        const result = await requestHelpers_1.get(url, '', this.auth);
+        const ambiHueState = JSON.parse(result);
+        return ambiHueState.power === 'On';
+    }
+    async getAmbilightState() {
+        const url = `https://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/ambilight/power`;
+        const result = await requestHelpers_1.get(url, '', this.auth);
+        const ambilightState = JSON.parse(result);
+        return ambilightState.power === 'On';
+    }
+    async setAmbilightState(state, style, setting) {
+        if (state) {
+            const url = `https://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/ambilight/currentconfiguration`;
+            return requestHelpers_1.post(url, JSON.stringify({
+                styleName: style || 'FOLLOW_VIDEO',
+                isExpert: false,
+                menuSetting: setting || 'NATURAL',
+            }), this.auth);
+        }
+        else {
+            const url = `https://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/ambilight/power`;
+            return requestHelpers_1.post(url, JSON.stringify({ power: 'Off' }), this.auth);
+        }
+    }
     async turnOn(counter = 0) {
         while (counter < this.config.wakeUntilAPIReadyCounter) {
             counter++;

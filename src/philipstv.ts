@@ -25,8 +25,25 @@ export interface Authentication {
     sendImmediately: boolean;
 }
 
+export type AmbilightStyle = 'FOLLOW_COLOR' | 'FOLLOW_VIDEO' | 'FOLLOW_AUDIO';
+export type AmbilightColorSetting = 'HOT_LAVA' | 'ISF' | 'PTA_LOUNGE' | 'FRESH_NATURE' | 'DEEP_WATER';
+export type AmbilightVideoSetting = 'STANDARD' | 'NATURAL' | 'VIVID' | 'GAME' | 'COMFORT' | 'RELAX';
+export type AmbilightAudioSetting =
+    'ENERGY_ADAPTIVE_BRIGHTNESS'
+    | 'ENERGY_ADAPTIVE_COLORS'
+    | 'VU_METER'
+    | 'SPECTRUM_ANALYZER'
+    | 'KNIGHT_RIDER_CLOCKWISE'
+    | 'KNIGHT_RIDER_ALTERNATING'
+    | 'RANDOM_PIXEL_FLASH'
+    | 'STROBO'
+    | 'PARTY'
+    | 'MODE_RANDOM';
+
+export type AmbilightSetting = AmbilightAudioSetting | AmbilightColorSetting | AmbilightVideoSetting;
+
 export class PhilipsTVChannels {
-    public channels : Channel[] = [];
+    public channels: Channel[] = [];
 
     reloadChannels(listChannels: string) {
         const channels = JSON.parse(listChannels);
@@ -40,7 +57,7 @@ export class PhilipsTVChannels {
         }
     }
 
-    getObjectByName(name: string) : Record<string, string> {
+    getObjectByName(name: string): Record<string, string> {
         for (const channel of this.channels) {
             if (channel.name === name) {
                 return channel.object;
@@ -49,7 +66,7 @@ export class PhilipsTVChannels {
         return {};
     }
 
-    getNameByCcid(ccid: string) : string {
+    getNameByCcid(ccid: string): string {
         for (const channel of this.channels) {
             if (channel.ccid === ccid) {
                 return channel.name;
@@ -58,7 +75,7 @@ export class PhilipsTVChannels {
         return '';
     }
 
-    getObjectByCcid(ccid: string) : Record<string, string> {
+    getObjectByCcid(ccid: string): Record<string, string> {
         for (const channel of this.channels) {
             if (channel.ccid === ccid) {
                 return channel.object;
@@ -118,7 +135,7 @@ export class PhilipsTV {
         this.tvChannels = new PhilipsTVChannels;
     }
 
-    async info() : Promise<Record<string, unknown>> {
+    async info(): Promise<Record<string, unknown>> {
         const url = `http://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/system`;
         const result = await get(url);
         const response = JSON.parse(result);
@@ -133,7 +150,7 @@ export class PhilipsTV {
         return true;
     }
 
-    async requestPair() : Promise<Record<string, unknown>> {
+    async requestPair(): Promise<Record<string, unknown>> {
         if (!this.requiresPairing()) {
             throw new Error('This API version does not require pairing');
         }
@@ -152,7 +169,7 @@ export class PhilipsTV {
         return pair_response;
     }
 
-    async authorizePair(timestamp: string, pin: string) : Promise<Record<string, unknown>> {
+    async authorizePair(timestamp: string, pin: string): Promise<Record<string, unknown>> {
         if (!this.requiresPairing()) {
             throw new Error('This API version does not require pairing');
         }
@@ -163,7 +180,7 @@ export class PhilipsTV {
             pin,
             this.auth!.user,
             this.auth!.pass,
-            this.appName
+            this.appName,
         );
 
         await post(auth_url, JSON.stringify(auth_payload), this.auth);
@@ -189,7 +206,7 @@ export class PhilipsTV {
     async wakeOnLan() {
         if (this.mac) {
             for (let i = 0; i < this.config.wakeOnLanRequests; i++) {
-                wol.wake(this.mac, { address: this.config.broadcastIP }, function (this, error) {
+                wol.wake(this.mac, { address: this.config.broadcastIP }, function(this, error) {
                     if (error) {
                         console.log('wakeOnLan: error: ' + error);
                     }
@@ -208,7 +225,7 @@ export class PhilipsTV {
 
     async setPowerState(on: boolean) {
         const url = `https://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/powerstate`;
-        let request_body = { 'powerstate': 'Standby'};
+        let request_body = { 'powerstate': 'Standby' };
 
         if (on) {
             request_body = { 'powerstate': 'On' };
@@ -295,6 +312,39 @@ export class PhilipsTV {
     async launchTVChannel(application: Record<string, string>) {
         const url = `https://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/activities/tv`;
         return post(url, JSON.stringify(application), this.auth!);
+    }
+
+    async setAmbilightPlusHueState(state: boolean): Promise<any> {
+        const url = `https://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/HueLamp/power`;
+        return post(url, JSON.stringify({ power: state ? 'On' : 'Off' }), this.auth!);
+    }
+
+    async getAmbilightPlusHueState(): Promise<boolean> {
+        const url = `https://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/HueLamp/power`;
+        const result = await get(url, '', this.auth!);
+        const ambiHueState = JSON.parse(result);
+        return ambiHueState.power === 'On';
+    }
+
+    async getAmbilightState(): Promise<boolean> {
+        const url = `https://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/ambilight/power`;
+        const result = await get(url, '', this.auth!);
+        const ambilightState = JSON.parse(result);
+        return ambilightState.power === 'On';
+    }
+
+    async setAmbilightState(state: boolean, style?: AmbilightStyle, setting?: AmbilightSetting): Promise<any> {
+        if (state) {
+            const url = `https://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/ambilight/currentconfiguration`;
+            return post(url, JSON.stringify({
+                styleName: style || 'FOLLOW_VIDEO',
+                isExpert: false,
+                menuSetting: setting || 'NATURAL',
+            }), this.auth!);
+        } else {
+            const url = `https://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/ambilight/power`;
+            return post(url, JSON.stringify({ power: 'Off' }), this.auth!);
+        }
     }
 
     async turnOn(counter = 0) {
