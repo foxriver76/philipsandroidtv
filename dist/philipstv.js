@@ -252,7 +252,7 @@ class PhilipsTV {
             return requestHelpers_1.post(url, JSON.stringify({
                 styleName: style || 'FOLLOW_VIDEO',
                 isExpert: false,
-                menuSetting: setting || 'NATURAL',
+                menuSetting: setting || 'GAME',
             }), this.auth);
         }
         else {

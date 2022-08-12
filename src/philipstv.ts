@@ -339,7 +339,7 @@ export class PhilipsTV {
             return post(url, JSON.stringify({
                 styleName: style || 'FOLLOW_VIDEO',
                 isExpert: false,
-                menuSetting: setting || 'NATURAL',
+                menuSetting: setting || 'GAME',
             }), this.auth!);
         } else {
             const url = `https://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/ambilight/power`;
