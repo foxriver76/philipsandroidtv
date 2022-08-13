@@ -59,6 +59,7 @@ export declare class PhilipsTV {
     getAmbilightPlusHueState(): Promise<boolean>;
     getAmbilightState(): Promise<boolean>;
     setAmbilightState(state: boolean, style?: AmbilightStyle, setting?: AmbilightSetting): Promise<any>;
+    sendCustomAmbilightCmd(cmd: Record<string, any>): Promise<string>;
     turnOn(counter?: number): Promise<void>;
     wakeUntilAPIReady(counter?: number): Promise<any>;
 }

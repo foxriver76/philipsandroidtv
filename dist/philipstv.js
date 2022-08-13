@@ -260,6 +260,10 @@ class PhilipsTV {
             return requestHelpers_1.post(url, JSON.stringify({ power: 'Off' }), this.auth);
         }
     }
+    async sendCustomAmbilightCmd(cmd) {
+        const url = `https://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/ambilight/currentconfiguration`;
+        return requestHelpers_1.post(url, JSON.stringify(cmd), this.auth);
+    }
     async turnOn(counter = 0) {
         while (counter < this.config.wakeUntilAPIReadyCounter) {
             counter++;

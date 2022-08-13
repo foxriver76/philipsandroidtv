@@ -347,6 +347,11 @@ export class PhilipsTV {
         }
     }
 
+    async sendCustomAmbilightCmd(cmd: Record<string, any>) {
+        const url = `https://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/ambilight/currentconfiguration`;
+        return post(url, JSON.stringify(cmd), this.auth!);
+    }
+
     async turnOn(counter = 0) {
         while (counter < this.config.wakeUntilAPIReadyCounter) {
             counter++;
