@@ -67,7 +67,6 @@ class PhilipsTV {
         else if (mac) {
             this.mac = mac;
         }
-        this.auth = auth;
         if (config) {
             this.config = config;
         }
@@ -79,6 +78,9 @@ class PhilipsTV {
                 wakeOnLanRequests: 1,
                 wakeOnLanTimeout: 1000,
             };
+        }
+        if (this.requiresPairing()) {
+            this.auth = auth;
         }
         if (this.config.apiVersion < 6) {
             this.apiPort = 1925;
