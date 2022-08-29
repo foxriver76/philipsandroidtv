@@ -81,6 +81,10 @@ class PhilipsTV {
         }
         if (this.requiresPairing()) {
             this.auth = auth;
+            this.protocol = 'https';
+        }
+        else {
+            this.protocol = 'http';
         }
         if (this.config.apiVersion < 6) {
             this.apiPort = 1925;
@@ -92,7 +96,7 @@ class PhilipsTV {
         this.tvChannels = new PhilipsTVChannels;
     }
     async info() {
-        const url = `http://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/system`;
+        const url = `${this.protocol}://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/system`;
         const result = await requestHelpers_1.get(url);
         const response = JSON.parse(result);
         return response;
@@ -107,7 +111,7 @@ class PhilipsTV {
         if (!this.requiresPairing()) {
             throw new Error('This API version does not require pairing');
         }
-        const pair_url = `https://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/pair/request`;
+        const pair_url = `${this.protocol}://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/pair/request`;
         const pair_payload = pair_1.createUniquePairRequestPayload(this.appName);
         const pair_result = await requestHelpers_1.post(pair_url, JSON.stringify(pair_payload));
         const pair_response = JSON.parse(pair_result);
@@ -122,7 +126,7 @@ class PhilipsTV {
         if (!this.requiresPairing()) {
             throw new Error('This API version does not require pairing');
         }
-        const auth_url = `https://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/pair/grant`;
+        const auth_url = `${this.protocol}://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/pair/grant`;
         const auth_payload = auth_1.prepareAuthenticationRequestPayload(timestamp, pin, this.auth.user, this.auth.pass, this.appName);
         await requestHelpers_1.post(auth_url, JSON.stringify(auth_payload), this.auth);
         return {
@@ -152,13 +156,13 @@ class PhilipsTV {
         }
     }
     async getPowerState() {
-        const url = `https://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/powerstate`;
+        const url = `${this.protocol}://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/powerstate`;
         // eslint-disable-next-line quotes
         const result = await requestHelpers_1.get(url, '', this.auth);
         return JSON.parse(result);
     }
     async setPowerState(on) {
-        const url = `https://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/powerstate`;
+        const url = `${this.protocol}://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/powerstate`;
         let request_body = { 'powerstate': 'Standby' };
         if (on) {
             request_body = { 'powerstate': 'On' };
@@ -167,32 +171,32 @@ class PhilipsTV {
         return;
     }
     async getApplications() {
-        const url = `https://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/applications`;
+        const url = `${this.protocol}://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/applications`;
         const result = await requestHelpers_1.get(url, '', this.auth);
         return JSON.parse(result);
     }
     async getCurrentActivity() {
-        const url = `https://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/activities/current`;
+        const url = `${this.protocol}://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/activities/current`;
         const result = await requestHelpers_1.get(url, '', this.auth);
         return JSON.parse(result);
     }
     async getCurrentTVChannel() {
-        const url = `https://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/activities/tv`;
+        const url = `${this.protocol}://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/activities/tv`;
         const result = await requestHelpers_1.get(url, '', this.auth);
         return JSON.parse(result);
     }
     async getFavoriteList(favoriteListId) {
-        const url = `https://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/channeldb/tv/favoriteLists/${String(favoriteListId)}`;
+        const url = `${this.protocol}://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/channeldb/tv/favoriteLists/${String(favoriteListId)}`;
         const result = await requestHelpers_1.get(url, '', this.auth);
         return JSON.parse(result);
     }
     async getTVChannels() {
-        const url = `https://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/channeldb/tv/channelLists/all`;
+        const url = `${this.protocol}://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/channeldb/tv/channelLists/all`;
         const result = await requestHelpers_1.get(url, '', this.auth);
         return JSON.parse(result);
     }
     async getVolume() {
-        const url = `https://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/audio/volume`;
+        const url = `${this.protocol}://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/audio/volume`;
         const result = await requestHelpers_1.get(url, '', this.auth);
         const response = JSON.parse(result);
         this.volume = response.current;
@@ -205,7 +209,7 @@ class PhilipsTV {
         return Math.floor(Number(result.current) * (100 / (result.max - result.min)));
     }
     async setVolume(value) {
-        const url = `https://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/audio/volume`;
+        const url = `${this.protocol}://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/audio/volume`;
         const request_body = { 'muted': false, 'current': value };
         this.volume = value;
         return requestHelpers_1.post(url, JSON.stringify(request_body), this.auth);
@@ -215,42 +219,42 @@ class PhilipsTV {
         return result;
     }
     async setMute(muted) {
-        const url = `https://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/audio/volume`;
+        const url = `${this.protocol}://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/audio/volume`;
         const request_body = { 'muted': muted, 'current': this.volume };
         return requestHelpers_1.post(url, JSON.stringify(request_body), this.auth);
     }
     async sendKey(key) {
-        const url = `https://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/input/key`;
+        const url = `${this.protocol}://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/input/key`;
         const request_body = { 'key': key };
         return requestHelpers_1.post(url, JSON.stringify(request_body), this.auth);
     }
     async launchApplication(application) {
-        const url = `https://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/activities/launch`;
+        const url = `${this.protocol}://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/activities/launch`;
         return requestHelpers_1.post(url, JSON.stringify(application), this.auth);
     }
     async launchTVChannel(application) {
-        const url = `https://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/activities/tv`;
+        const url = `${this.protocol}://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/activities/tv`;
         return requestHelpers_1.post(url, JSON.stringify(application), this.auth);
     }
     async setAmbilightPlusHueState(state) {
-        const url = `https://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/HueLamp/power`;
+        const url = `${this.protocol}://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/HueLamp/power`;
         return requestHelpers_1.post(url, JSON.stringify({ power: state ? 'On' : 'Off' }), this.auth);
     }
     async getAmbilightPlusHueState() {
-        const url = `https://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/HueLamp/power`;
+        const url = `${this.protocol}://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/HueLamp/power`;
         const result = await requestHelpers_1.get(url, '', this.auth);
         const ambiHueState = JSON.parse(result);
         return ambiHueState.power === 'On';
     }
     async getAmbilightState() {
-        const url = `https://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/ambilight/power`;
+        const url = `${this.protocol}://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/ambilight/power`;
         const result = await requestHelpers_1.get(url, '', this.auth);
         const ambilightState = JSON.parse(result);
         return ambilightState.power === 'On';
     }
     async setAmbilightState(state, style, setting) {
         if (state) {
-            const url = `https://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/ambilight/currentconfiguration`;
+            const url = `${this.protocol}://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/ambilight/currentconfiguration`;
             return requestHelpers_1.post(url, JSON.stringify({
                 styleName: style || 'FOLLOW_VIDEO',
                 isExpert: false,
@@ -258,12 +262,12 @@ class PhilipsTV {
             }), this.auth);
         }
         else {
-            const url = `https://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/ambilight/power`;
+            const url = `${this.protocol}://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/ambilight/power`;
             return requestHelpers_1.post(url, JSON.stringify({ power: 'Off' }), this.auth);
         }
     }
     async sendCustomAmbilightCmd(cmd) {
-        const url = `https://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/ambilight/currentconfiguration`;
+        const url = `${this.protocol}://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/ambilight/currentconfiguration`;
         return requestHelpers_1.post(url, JSON.stringify(cmd), this.auth);
     }
     async turnOn(counter = 0) {

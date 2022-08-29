@@ -33,6 +33,7 @@ export declare class PhilipsTV {
     private readonly apiPort;
     private readonly appName;
     tvChannels: PhilipsTVChannels;
+    private readonly protocol;
     constructor(ip: string, mac?: string, auth?: Authentication, config?: PhilipsTVConfig, appName?: string);
     info(): Promise<Record<string, unknown>>;
     requiresPairing(): boolean;
