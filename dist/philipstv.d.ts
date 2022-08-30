@@ -4,6 +4,7 @@ export interface PhilipsTVConfig {
     broadcastIP: string;
     wakeOnLanRequests: number;
     wakeOnLanTimeout: number;
+    apiType?: 'Jointspace' | 'Android';
 }
 export interface Authentication {
     user: string;

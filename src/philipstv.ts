@@ -17,6 +17,7 @@ export interface PhilipsTVConfig {
     broadcastIP: string;
     wakeOnLanRequests: number;
     wakeOnLanTimeout: number;
+    apiType?: 'Jointspace' | 'Android';
 }
 
 export interface Authentication {
@@ -120,7 +121,12 @@ export class PhilipsTV {
                 broadcastIP: '255.255.255.255',
                 wakeOnLanRequests: 1,
                 wakeOnLanTimeout: 1000,
+                apiType: 'Android',
             };
+        }
+
+        if (!this.config.apiType) {
+            this.config.apiType = 'Android';
         }
 
         if (this.requiresPairing()) {
@@ -130,7 +136,7 @@ export class PhilipsTV {
             this.protocol = 'http';
         }
 
-        if (this.config.apiVersion < 6) {
+        if (this.config.apiType === 'Jointspace') {
             this.apiPort = 1925;
         } else {
             this.apiPort = 1926;
@@ -149,7 +155,7 @@ export class PhilipsTV {
     }
 
     requiresPairing(): boolean {
-        if (this.config.apiVersion < 6) {
+        if (this.config.apiType === 'Jointspace') {
             return false;
         }
 

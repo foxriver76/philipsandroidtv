@@ -77,7 +77,11 @@ class PhilipsTV {
                 broadcastIP: '255.255.255.255',
                 wakeOnLanRequests: 1,
                 wakeOnLanTimeout: 1000,
+                apiType: 'Android',
             };
+        }
+        if (!this.config.apiType) {
+            this.config.apiType = 'Android';
         }
         if (this.requiresPairing()) {
             this.auth = auth;
@@ -86,7 +90,7 @@ class PhilipsTV {
         else {
             this.protocol = 'http';
         }
-        if (this.config.apiVersion < 6) {
+        if (this.config.apiType === 'Jointspace') {
             this.apiPort = 1925;
         }
         else {
@@ -102,7 +106,7 @@ class PhilipsTV {
         return response;
     }
     requiresPairing() {
-        if (this.config.apiVersion < 6) {
+        if (this.config.apiType === 'Jointspace') {
             return false;
         }
         return true;
