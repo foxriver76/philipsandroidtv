@@ -8,7 +8,7 @@ const validate = {
     mac: /^([0-9A-F]{2}[:-]){5}([0-9A-F]{2})$/,
     // eslint-disable-next-line
     ip: /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/,
-    pin: /^[0-9]{4}$/,
+    pin: /^[0-9]{4}$/
 };
 
 export interface PhilipsTVConfig {
@@ -30,7 +30,7 @@ export type AmbilightStyle = 'FOLLOW_COLOR' | 'FOLLOW_VIDEO' | 'FOLLOW_AUDIO';
 export type AmbilightColorSetting = 'HOT_LAVA' | 'ISF' | 'PTA_LOUNGE' | 'FRESH_NATURE' | 'DEEP_WATER';
 export type AmbilightVideoSetting = 'STANDARD' | 'NATURAL' | 'VIVID' | 'GAME' | 'COMFORT' | 'RELAX';
 export type AmbilightAudioSetting =
-    'ENERGY_ADAPTIVE_BRIGHTNESS'
+    | 'ENERGY_ADAPTIVE_BRIGHTNESS'
     | 'ENERGY_ADAPTIVE_COLORS'
     | 'VU_METER'
     | 'SPECTRUM_ANALYZER'
@@ -53,7 +53,9 @@ export class PhilipsTVChannels {
 
         for (const channel of channels.Channel) {
             this.channels.push({
-                ccid: channel.ccid, name: channel.name, object: channel,
+                ccid: channel.ccid,
+                name: channel.name,
+                object: channel
             });
         }
     }
@@ -101,13 +103,13 @@ export class PhilipsTV {
 
     constructor(ip: string, mac?: string, auth?: Authentication, config?: PhilipsTVConfig, appName?: string) {
         if (!validate.ip.test(ip)) {
-            throw 'IP is not an IP Address!';
+            throw new Error('IP is not an IP Address!');
         }
 
         this.ip = ip;
 
         if (mac && !validate.mac.test(mac)) {
-            throw 'Provided MAC is not an MAC Address!';
+            throw new Error('Provided MAC is not an MAC Address!');
         } else if (mac) {
             this.mac = mac;
         }
@@ -121,7 +123,7 @@ export class PhilipsTV {
                 broadcastIP: '255.255.255.255',
                 wakeOnLanRequests: 1,
                 wakeOnLanTimeout: 1000,
-                apiType: 'Android',
+                apiType: 'Android'
             };
         }
 
@@ -144,7 +146,7 @@ export class PhilipsTV {
 
         this.appName = appName || 'Homebridge';
 
-        this.tvChannels = new PhilipsTVChannels;
+        this.tvChannels = new PhilipsTVChannels();
     }
 
     async info(): Promise<Record<string, unknown>> {
@@ -175,7 +177,7 @@ export class PhilipsTV {
         this.auth = {
             user: pair_payload.device_id,
             pass: pair_response.auth_key,
-            sendImmediately: false,
+            sendImmediately: false
         };
 
         return pair_response;
@@ -192,14 +194,14 @@ export class PhilipsTV {
             pin,
             this.auth!.user,
             this.auth!.pass,
-            this.appName,
+            this.appName
         );
 
         await post(auth_url, JSON.stringify(auth_payload), this.auth);
 
         return {
-            'apiUser': this.auth!.user,
-            'apiPass': this.auth!.pass,
+            apiUser: this.auth!.user,
+            apiPass: this.auth!.pass
         };
     }
 
@@ -218,11 +220,15 @@ export class PhilipsTV {
     async wakeOnLan() {
         if (this.mac) {
             for (let i = 0; i < this.config.wakeOnLanRequests; i++) {
-                wol.wake(this.mac, { address: this.config.broadcastIP }, function(this, error) {
-                    if (error) {
-                        console.log('wakeOnLan: error: ' + error);
-                    }
-                }.bind(this));
+                wol.wake(
+                    this.mac,
+                    { address: this.config.broadcastIP },
+                    function (this, error) {
+                        if (error) {
+                            console.log('wakeOnLan: error: ' + error);
+                        }
+                    }.bind(this)
+                );
             }
             return new Promise(resolve => setTimeout(resolve, this.config.wakeOnLanTimeout));
         }
@@ -237,10 +243,10 @@ export class PhilipsTV {
 
     async setPowerState(on: boolean) {
         const url = `${this.protocol}://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/powerstate`;
-        let request_body = { 'powerstate': 'Standby' };
+        let request_body = { powerstate: 'Standby' };
 
         if (on) {
-            request_body = { 'powerstate': 'On' };
+            request_body = { powerstate: 'On' };
         }
 
         await post(url, JSON.stringify(request_body), this.auth!);
@@ -254,7 +260,9 @@ export class PhilipsTV {
     }
 
     async getCurrentActivity() {
-        const url = `${this.protocol}://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/activities/current`;
+        const url = `${this.protocol}://${this.ip}:${this.apiPort}/${String(
+            this.config.apiVersion
+        )}/activities/current`;
         const result = await get(url, '', this.auth!);
         return JSON.parse(result);
     }
@@ -266,13 +274,17 @@ export class PhilipsTV {
     }
 
     async getFavoriteList(favoriteListId: number) {
-        const url = `${this.protocol}://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/channeldb/tv/favoriteLists/${String(favoriteListId)}`;
+        const url = `${this.protocol}://${this.ip}:${this.apiPort}/${String(
+            this.config.apiVersion
+        )}/channeldb/tv/favoriteLists/${String(favoriteListId)}`;
         const result = await get(url, '', this.auth!);
         return JSON.parse(result);
     }
 
     async getTVChannels() {
-        const url = `${this.protocol}://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/channeldb/tv/channelLists/all`;
+        const url = `${this.protocol}://${this.ip}:${this.apiPort}/${String(
+            this.config.apiVersion
+        )}/channeldb/tv/channelLists/all`;
         const result = await get(url, '', this.auth!);
         return JSON.parse(result);
     }
@@ -294,7 +306,7 @@ export class PhilipsTV {
 
     async setVolume(value: number) {
         const url = `${this.protocol}://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/audio/volume`;
-        const request_body = { 'muted': false, 'current': value };
+        const request_body = { muted: false, current: value };
         this.volume = value;
         return post(url, JSON.stringify(request_body), this.auth!);
     }
@@ -306,13 +318,13 @@ export class PhilipsTV {
 
     async setMute(muted: boolean) {
         const url = `${this.protocol}://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/audio/volume`;
-        const request_body = { 'muted': muted, 'current': this.volume };
+        const request_body = { muted: muted, current: this.volume };
         return post(url, JSON.stringify(request_body), this.auth!);
     }
 
     async sendKey(key: string) {
         const url = `${this.protocol}://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/input/key`;
-        const request_body = { 'key': key };
+        const request_body = { key: key };
         return post(url, JSON.stringify(request_body), this.auth!);
     }
 
@@ -347,27 +359,37 @@ export class PhilipsTV {
 
     async setAmbilightState(state: boolean, style?: AmbilightStyle, setting?: AmbilightSetting): Promise<any> {
         if (state) {
-            const url = `${this.protocol}://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/ambilight/currentconfiguration`;
-            return post(url, JSON.stringify({
-                styleName: style || 'FOLLOW_VIDEO',
-                isExpert: false,
-                menuSetting: setting || 'GAME',
-            }), this.auth!);
+            const url = `${this.protocol}://${this.ip}:${this.apiPort}/${String(
+                this.config.apiVersion
+            )}/ambilight/currentconfiguration`;
+            return post(
+                url,
+                JSON.stringify({
+                    styleName: style || 'FOLLOW_VIDEO',
+                    isExpert: false,
+                    menuSetting: setting || 'GAME'
+                }),
+                this.auth!
+            );
         } else {
-            const url = `${this.protocol}://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/ambilight/power`;
+            const url = `${this.protocol}://${this.ip}:${this.apiPort}/${String(
+                this.config.apiVersion
+            )}/ambilight/power`;
             return post(url, JSON.stringify({ power: 'Off' }), this.auth!);
         }
     }
 
     async sendCustomAmbilightCmd(cmd: Record<string, any>) {
-        const url = `${this.protocol}://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/ambilight/currentconfiguration`;
+        const url = `${this.protocol}://${this.ip}:${this.apiPort}/${String(
+            this.config.apiVersion
+        )}/ambilight/currentconfiguration`;
         return post(url, JSON.stringify(cmd), this.auth!);
     }
 
     async turnOn(counter = 0) {
         while (counter < this.config.wakeUntilAPIReadyCounter) {
             counter++;
-            if ((counter % 10) === 0) {
+            if (counter % 10 === 0) {
                 console.log(`turnOn: try ${counter}`);
             }
             try {
@@ -382,7 +404,7 @@ export class PhilipsTV {
     async wakeUntilAPIReady(counter = 0) {
         while (counter < this.config.wakeUntilAPIReadyCounter) {
             counter++;
-            if ((counter % 10) === 0) {
+            if (counter % 10 === 0) {
                 console.log(`wakeUntilAPIReady: try ${counter}`);
             }
             try {
@@ -394,7 +416,6 @@ export class PhilipsTV {
         }
     }
 }
-
 
 interface Channel {
     ccid: string;

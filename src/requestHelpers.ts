@@ -12,16 +12,16 @@ export interface RequestPayload {
     auth?: Authentication;
 }
 
-export async function doRequest(method: string, url: string, body = '', auth?: Authentication) : Promise<string> {
+export async function doRequest(method: string, url: string, body = '', auth?: Authentication): Promise<string> {
     return new Promise(function (this, resolve, reject) {
-        const payload : RequestPayload = { 
+        const payload: RequestPayload = {
             url: url,
             method: method,
             body: body,
             rejectUnauthorized: false,
             timeout: 5000,
             forever: true,
-            followAllRedirects: true,
+            followAllRedirects: true
         };
 
         if (auth) {
@@ -41,14 +41,13 @@ export async function doRequest(method: string, url: string, body = '', auth?: A
         } catch {
             reject('Request module failure');
         }
-  
     });
 }
 
-export async function get(url: string, body = '', auth?: Authentication) : Promise<string> {
+export async function get(url: string, body = '', auth?: Authentication): Promise<string> {
     return doRequest('GET', url, body, auth);
 }
 
-export async function post(url: string, body = '', auth?: Authentication) : Promise<string> {
+export async function post(url: string, body = '', auth?: Authentication): Promise<string> {
     return doRequest('POST', url, body, auth);
 }

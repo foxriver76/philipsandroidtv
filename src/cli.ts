@@ -11,12 +11,12 @@ interface PinResponse {
 cli.version('0.0.1')
     .command('info', 'Fetch information from TV')
     .argument('<host>', 'TV IP Address', cli.STRING)
-    .action(async(args, option, logger) => {
+    .action(async (args, option, logger) => {
         try {
             const philipsTv = new PhilipsTV(args.host);
             const result = await philipsTv.info();
             logger.info(result);
-        } catch (error) {
+        } catch (error: any) {
             logger.error(error.message);
             logger.debug(error.stack);
         } finally {
@@ -26,21 +26,21 @@ cli.version('0.0.1')
 
     .command('pair', 'Performs pairing with TV to generate API user and password')
     .argument('<host>', 'TV IP Address', cli.STRING)
-    .action(async(args, option, logger) => {
+    .action(async (args, option, logger) => {
         try {
             const philipsTv = new PhilipsTV(args.host);
-            
-            const result = await philipsTv.pair(async() : Promise<string> => {
-                const response : PinResponse = await prompt({
+
+            const result = await philipsTv.pair(async (): Promise<string> => {
+                const response: PinResponse = await prompt({
                     type: 'input',
                     name: 'pin',
-                    message: 'Please enter the four-digit PIN.',
+                    message: 'Please enter the four-digit PIN.'
                 });
                 return response.pin;
             });
 
             logger.info(result);
-        } catch (error) {
+        } catch (error: any) {
             logger.error(error.message);
             logger.debug(error.stack);
         } finally {
@@ -53,12 +53,12 @@ cli.version('0.0.1')
     .argument('<apiUser>', 'TV API Username', cli.STRING)
     .argument('<apiPass>', 'TV API Password', cli.STRING)
     .option('-s, --state <state>', 'Turning TV on (true) or sleep (false)', cli.BOOLEAN)
-    .action(async(args, option, logger) => {
+    .action(async (args, option, logger) => {
         try {
-            const auth : Authentication = {
+            const auth: Authentication = {
                 user: args.apiUser,
                 pass: args.apiPass,
-                sendImmediately: false,
+                sendImmediately: false
             };
             const philipsTv = new PhilipsTV(args.host, undefined, auth);
             if (option.state) {
@@ -68,7 +68,7 @@ cli.version('0.0.1')
                 const result = await philipsTv.getPowerState();
                 logger.info('OK', result);
             }
-        } catch (error) {
+        } catch (error: any) {
             logger.error(error.message);
             logger.debug(error.stack);
         } finally {
@@ -80,17 +80,17 @@ cli.version('0.0.1')
     .argument('<host>', 'TV IP Address', cli.STRING)
     .argument('<apiUser>', 'TV API Username', cli.STRING)
     .argument('<apiPass>', 'TV API Password', cli.STRING)
-    .action(async(args, option, logger) => {
+    .action(async (args, option, logger) => {
         try {
-            const auth : Authentication = {
+            const auth: Authentication = {
                 user: args.apiUser,
                 pass: args.apiPass,
-                sendImmediately: false,
+                sendImmediately: false
             };
             const philipsTv = new PhilipsTV(args.host, undefined, auth);
             const result = await philipsTv.getApplications();
             logger.info('OK', result);
-        } catch (error) {
+        } catch (error: any) {
             logger.error(error.message);
             logger.debug(error.stack);
         } finally {
@@ -102,17 +102,17 @@ cli.version('0.0.1')
     .argument('<host>', 'TV IP Address', cli.STRING)
     .argument('<apiUser>', 'TV API Username', cli.STRING)
     .argument('<apiPass>', 'TV API Password', cli.STRING)
-    .action(async(args, option, logger) => {
+    .action(async (args, option, logger) => {
         try {
-            const auth : Authentication = {
+            const auth: Authentication = {
                 user: args.apiUser,
                 pass: args.apiPass,
-                sendImmediately: false,
+                sendImmediately: false
             };
             const philipsTv = new PhilipsTV(args.host, undefined, auth);
             const result = await philipsTv.getCurrentActivity();
             logger.info('OK', result);
-        } catch (error) {
+        } catch (error: any) {
             logger.error(error.message);
             logger.debug(error.stack);
         } finally {
@@ -124,23 +124,22 @@ cli.version('0.0.1')
     .argument('<host>', 'TV IP Address', cli.STRING)
     .argument('<apiUser>', 'TV API Username', cli.STRING)
     .argument('<apiPass>', 'TV API Password', cli.STRING)
-    .action(async(args, option, logger) => {
+    .action(async (args, option, logger) => {
         try {
-            const auth : Authentication = {
+            const auth: Authentication = {
                 user: args.apiUser,
                 pass: args.apiPass,
-                sendImmediately: false,
+                sendImmediately: false
             };
             const philipsTv = new PhilipsTV(args.host, undefined, auth);
             const result = await philipsTv.getVolume();
             logger.info('OK', result);
-        } catch (error) {
+        } catch (error: any) {
             logger.error(error.message);
             logger.debug(error.stack);
         } finally {
             process.exit();
         }
     });
-
 
 cli.parse(process.argv);
