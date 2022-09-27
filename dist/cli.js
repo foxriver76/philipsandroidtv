@@ -30,10 +30,10 @@ cli.version('0.0.1')
     try {
         const philipsTv = new philipstv_1.PhilipsTV(args.host);
         const result = await philipsTv.pair(async () => {
-            const response = await enquirer_1.prompt({
+            const response = await (0, enquirer_1.prompt)({
                 type: 'input',
                 name: 'pin',
-                message: 'Please enter the four-digit PIN.',
+                message: 'Please enter the four-digit PIN.'
             });
             return response.pin;
         });
@@ -57,7 +57,7 @@ cli.version('0.0.1')
         const auth = {
             user: args.apiUser,
             pass: args.apiPass,
-            sendImmediately: false,
+            sendImmediately: false
         };
         const philipsTv = new philipstv_1.PhilipsTV(args.host, undefined, auth);
         if (option.state) {
@@ -86,7 +86,7 @@ cli.version('0.0.1')
         const auth = {
             user: args.apiUser,
             pass: args.apiPass,
-            sendImmediately: false,
+            sendImmediately: false
         };
         const philipsTv = new philipstv_1.PhilipsTV(args.host, undefined, auth);
         const result = await philipsTv.getApplications();
@@ -109,7 +109,7 @@ cli.version('0.0.1')
         const auth = {
             user: args.apiUser,
             pass: args.apiPass,
-            sendImmediately: false,
+            sendImmediately: false
         };
         const philipsTv = new philipstv_1.PhilipsTV(args.host, undefined, auth);
         const result = await philipsTv.getCurrentActivity();
@@ -132,7 +132,7 @@ cli.version('0.0.1')
         const auth = {
             user: args.apiUser,
             pass: args.apiPass,
-            sendImmediately: false,
+            sendImmediately: false
         };
         const philipsTv = new philipstv_1.PhilipsTV(args.host, undefined, auth);
         const result = await philipsTv.getVolume();

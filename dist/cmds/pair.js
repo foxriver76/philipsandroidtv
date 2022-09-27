@@ -14,17 +14,17 @@ function makeDeviceId(length) {
 function createUniquePairRequestPayload(appName) {
     const deviceId = makeDeviceId(16);
     const payload = {
-        'application_id': 'app.id',
-        'device_id': deviceId,
-        'scope': ['read', 'write', 'control'],
-        'device': {
-            'device_name': 'heliotrope',
-            'device_os': 'Android',
-            'app_name': appName,
-            'type': 'native',
-            'app_id': 'app.id',
-            'id': deviceId,
-        },
+        application_id: 'app.id',
+        device_id: deviceId,
+        scope: ['read', 'write', 'control'],
+        device: {
+            device_name: 'heliotrope',
+            device_os: 'Android',
+            app_name: appName,
+            type: 'native',
+            app_id: 'app.id',
+            id: deviceId
+        }
     };
     return payload;
 }

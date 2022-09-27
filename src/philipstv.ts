@@ -3,13 +3,23 @@ import wol from 'wake_on_lan';
 import { get, post } from './requestHelpers';
 import { prepareAuthenticationRequestPayload } from './cmds/auth';
 import { createUniquePairRequestPayload } from './cmds/pair';
-
 const validate = {
     mac: /^([0-9A-F]{2}[:-]){5}([0-9A-F]{2})$/,
     // eslint-disable-next-line
     ip: /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/,
     pin: /^[0-9]{4}$/
 };
+
+interface VolumeObject {
+    current: number;
+    min: number;
+    max: number;
+    muted: boolean;
+}
+
+interface PowerObject {
+    powerstate: 'On' | 'Standby';
+}
 
 export interface PhilipsTVConfig {
     apiVersion: number;
@@ -234,14 +244,14 @@ export class PhilipsTV {
         }
     }
 
-    async getPowerState() {
+    async getPowerState(): Promise<PowerObject> {
         const url = `${this.protocol}://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/powerstate`;
         // eslint-disable-next-line quotes
         const result = await get(url, '', this.auth!);
         return JSON.parse(result);
     }
 
-    async setPowerState(on: boolean) {
+    async setPowerState(on: boolean): Promise<void> {
         const url = `${this.protocol}://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/powerstate`;
         let request_body = { powerstate: 'Standby' };
 
@@ -289,10 +299,10 @@ export class PhilipsTV {
         return JSON.parse(result);
     }
 
-    async getVolume() {
+    async getVolume(): Promise<VolumeObject> {
         const url = `${this.protocol}://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/audio/volume`;
         const result = await get(url, '', this.auth!);
-        const response = JSON.parse(result);
+        const response: VolumeObject = JSON.parse(result);
         this.volume = response.current;
         this.volumeMax = response.max;
         this.volumeMin = response.min;

@@ -1,3 +1,12 @@
+interface VolumeObject {
+    current: number;
+    min: number;
+    max: number;
+    muted: boolean;
+}
+interface PowerObject {
+    powerstate: 'On' | 'Standby';
+}
 export interface PhilipsTVConfig {
     apiVersion: number;
     wakeUntilAPIReadyCounter: number;
@@ -42,14 +51,14 @@ export declare class PhilipsTV {
     authorizePair(timestamp: string, pin: string): Promise<Record<string, unknown>>;
     pair(pinCallback: () => Promise<string>): Promise<Record<string, unknown>>;
     wakeOnLan(): Promise<unknown>;
-    getPowerState(): Promise<any>;
+    getPowerState(): Promise<PowerObject>;
     setPowerState(on: boolean): Promise<void>;
     getApplications(): Promise<any>;
     getCurrentActivity(): Promise<any>;
     getCurrentTVChannel(): Promise<any>;
     getFavoriteList(favoriteListId: number): Promise<any>;
     getTVChannels(): Promise<any>;
-    getVolume(): Promise<any>;
+    getVolume(): Promise<VolumeObject>;
     getVolumePercentage(): Promise<number>;
     setVolume(value: number): Promise<string>;
     setVolumePercentage(percentage: number): Promise<string>;
@@ -63,7 +72,7 @@ export declare class PhilipsTV {
     setAmbilightState(state: boolean, style?: AmbilightStyle, setting?: AmbilightSetting): Promise<any>;
     sendCustomAmbilightCmd(cmd: Record<string, any>): Promise<string>;
     turnOn(counter?: number): Promise<void>;
-    wakeUntilAPIReady(counter?: number): Promise<any>;
+    wakeUntilAPIReady(counter?: number): Promise<PowerObject | undefined>;
 }
 interface Channel {
     ccid: string;

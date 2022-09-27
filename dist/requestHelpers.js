@@ -14,13 +14,13 @@ async function doRequest(method, url, body = '', auth) {
             rejectUnauthorized: false,
             timeout: 5000,
             forever: true,
-            followAllRedirects: true,
+            followAllRedirects: true
         };
         if (auth) {
             payload.auth = auth;
         }
         try {
-            request_1.default(payload, function (error, res, body) {
+            (0, request_1.default)(payload, function (error, res, body) {
                 if (!error && res.statusCode === 200) {
                     resolve(body);
                 }
