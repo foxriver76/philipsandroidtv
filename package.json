@@ -1,7 +1,7 @@
 {
-  "name": "@konradknitter/philipsandroidtv",
-  "description": "Node.js module for Philips Andorid TV",
-  "version": "1.2.0",
+  "name": "philips-tv-api",
+  "description": "Node.js module for Philips TV",
+  "version": "0.0.1",
   "keywords": [
     "philips",
     "android",
@@ -12,14 +12,14 @@
     "lint": "eslint --fix .",
     "build": "rimraf ./build && tsc"
   },
-  "author": "konradknitter",
-  "homepage": "https://github.com/konradknitter/philipsandroidtv",
+  "author": "foxriver76",
+  "homepage": "https://github.com/foxriver76/philipsandroidtv",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/konradknitter/philipsandroidtv.git"
+    "url": "git+https://github.com/foxriver76/philipsandroidtv.git"
   },
   "bugs": {
-    "url": "https://github.com/konradknitter/philipsandroidtv/issues"
+    "url": "https://github.com/foxriver76/philipsandroidtv/issues"
   },
   "license": "MIT",
   "files": [
