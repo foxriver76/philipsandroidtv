@@ -13,7 +13,6 @@ async function doRequest(method, url, body = '', auth) {
             body: body,
             rejectUnauthorized: false,
             timeout: 5000,
-            forever: true,
             followAllRedirects: true
         };
         if (auth) {

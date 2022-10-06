@@ -10,7 +10,7 @@
   ],
   "scripts": {
     "lint": "eslint --fix .",
-    "build": "rimraf ./dist && tsc"
+    "build": "rimraf ./build && tsc"
   },
   "author": "konradknitter",
   "homepage": "https://github.com/konradknitter/philipsandroidtv",
@@ -22,7 +22,11 @@
     "url": "https://github.com/konradknitter/philipsandroidtv/issues"
   },
   "license": "MIT",
-  "main": "dist/philipstv.js",
+  "files": [
+    "build/",
+    "LICENSE"
+  ],
+  "main": "build/philipstv.js",
   "engines": {
     "node": ">=10.0.0"
   },
@@ -35,8 +39,6 @@
     "@types/request": "^2.48.8",
     "@typescript-eslint/eslint-plugin": "^5.38.1",
     "@typescript-eslint/parser": "^5.38.1",
-    "caporal": "^1.4.0",
-    "enquirer": "2.3.6",
     "eslint": "^8.24.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",

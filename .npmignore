@@ -1,6 +1,0 @@
-.github/
-eslintrc
-.prettierrc.json
-node_modules/
-src/
-tsconfig.json

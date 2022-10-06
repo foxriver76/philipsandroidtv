@@ -7,7 +7,6 @@ export interface RequestPayload {
     body: string;
     rejectUnauthorized: boolean;
     timeout: number;
-    forever: boolean;
     followAllRedirects: boolean;
     auth?: Authentication;
 }
@@ -20,7 +19,6 @@ export async function doRequest(method: string, url: string, body = '', auth?: A
             body: body,
             rejectUnauthorized: false,
             timeout: 5000,
-            forever: true,
             followAllRedirects: true
         };
 

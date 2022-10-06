@@ -5,7 +5,6 @@ export interface RequestPayload {
     body: string;
     rejectUnauthorized: boolean;
     timeout: number;
-    forever: boolean;
     followAllRedirects: boolean;
     auth?: Authentication;
 }
