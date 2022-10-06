@@ -13,7 +13,8 @@ async function doRequest(method, url, body = '', auth) {
             body: body,
             rejectUnauthorized: false,
             timeout: 5000,
-            followAllRedirects: true
+            followAllRedirects: true,
+            forever: true
         };
         if (auth) {
             payload.auth = auth;

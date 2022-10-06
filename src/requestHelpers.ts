@@ -9,6 +9,7 @@ export interface RequestPayload {
     timeout: number;
     followAllRedirects: boolean;
     auth?: Authentication;
+    forever: boolean;
 }
 
 export async function doRequest(method: string, url: string, body = '', auth?: Authentication): Promise<string> {
@@ -19,7 +20,8 @@ export async function doRequest(method: string, url: string, body = '', auth?: A
             body: body,
             rejectUnauthorized: false,
             timeout: 5000,
-            followAllRedirects: true
+            followAllRedirects: true,
+            forever: true
         };
 
         if (auth) {
