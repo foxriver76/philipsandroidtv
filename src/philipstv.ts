@@ -10,6 +10,17 @@ const validate = {
     pin: /^[0-9]{4}$/
 };
 
+interface Application {
+    intent: {
+        extras: Record<string, any>;
+        component: {
+            packageName: string;
+            className: string;
+        };
+        action: string;
+    };
+}
+
 interface VolumeObject {
     current: number;
     min: number;
@@ -36,6 +47,49 @@ export interface Authentication {
     sendImmediately: boolean;
 }
 
+export interface SystemInfo {
+    notifyChange: string;
+    menulanguage: string;
+    name: string;
+    country: string;
+    serialnumber_encrypted: string;
+    softwareversion_encrypted: string;
+    model_encrypted: string;
+    deviceid_encrypted: string;
+    nettvversion: string;
+    epgsource: string;
+    api_version: {
+        Major: number;
+        Minor: number;
+        Patch: number;
+    };
+    featuring: {
+        jsonfeatures: {
+            editfavorites: string[];
+            recordings: string[];
+            ambilight: string[];
+            menuitems: string[];
+            textentry: string[];
+            applications: string[];
+            pointer: string[];
+            inputkey: string[];
+            activities: string[];
+            channels: string[];
+            mappings: string[];
+        };
+        systemfeatures: {
+            tvtype: string;
+            content: string[];
+            tvsearch: string;
+            pairing_type: string;
+            secured_transport: string;
+            companion_screen: string;
+        };
+    };
+    os_type: string;
+}
+
+export type Input = 'HDMI 1' | 'HDMI 2' | 'HDMI 3' | 'HDMI 4' | 'WATCH TV';
 export type AmbilightStyle = 'FOLLOW_COLOR' | 'FOLLOW_VIDEO' | 'FOLLOW_AUDIO';
 export type AmbilightColorSetting = 'HOT_LAVA' | 'ISF' | 'PTA_LOUNGE' | 'FRESH_NATURE' | 'DEEP_WATER';
 export type AmbilightVideoSetting = 'STANDARD' | 'NATURAL' | 'VIVID' | 'GAME' | 'COMFORT' | 'RELAX';
@@ -99,6 +153,14 @@ export class PhilipsTVChannels {
 }
 
 export class PhilipsTV {
+    private readonly inputMapping = {
+        'WATCH TV': null,
+        'HDMI 1': 'com.mediatek.tvinput/.hdmi.HDMIInputService/HW5',
+        'HDMI 2': 'com.mediatek.tvinput/.hdmi.HDMIInputService/HW6',
+        'HDMI 3': 'com.mediatek.tvinput/.hdmi.HDMIInputService/HW7',
+        'HDMI 4': 'com.mediatek.tvinput/.hdmi.HDMIInputService/HW8'
+    } as const;
+
     private readonly ip: string;
     private readonly mac?: string;
     private auth?: Authentication;
@@ -106,6 +168,7 @@ export class PhilipsTV {
     private volume?: number;
     private volumeMin = 0;
     private volumeMax = 0;
+    private systemInfo: SystemInfo | undefined;
     private readonly apiPort: number;
     private readonly appName: string;
     public tvChannels: PhilipsTVChannels;
@@ -159,11 +222,39 @@ export class PhilipsTV {
         this.tvChannels = new PhilipsTVChannels();
     }
 
-    async info(): Promise<Record<string, unknown>> {
+    async info(): Promise<SystemInfo> {
         const url = `${this.protocol}://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/system`;
         const result = await get(url);
         const response = JSON.parse(result);
+        this.systemInfo = response;
         return response;
+    }
+
+    /**
+     * Set source if supported by the TV
+     * @param input
+     */
+    async setSource(input: Input): Promise<string> {
+        if (!this.systemInfo) {
+            await this.info();
+        }
+
+        if (!this.systemInfo?.featuring.jsonfeatures.activities.includes('intent')) {
+            throw new Error('Setting sources is not supported');
+        }
+
+        const intent: Application = {
+            intent: {
+                extras: { uri: this.inputMapping[input]! },
+                action: 'org.droidtv.playtv.SELECTURI',
+                component: {
+                    packageName: 'org.droidtv.playtv',
+                    className: 'org.droidtv.playtv.PlayTvActivity'
+                }
+            }
+        };
+
+        return this.launchApplication(intent);
     }
 
     requiresPairing(): boolean {
@@ -338,7 +429,7 @@ export class PhilipsTV {
         return post(url, JSON.stringify(request_body), this.auth!);
     }
 
-    async launchApplication(application: Record<string, string>) {
+    async launchApplication(application: Application) {
         const url = `${this.protocol}://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/activities/launch`;
         return post(url, JSON.stringify(application), this.auth!);
     }

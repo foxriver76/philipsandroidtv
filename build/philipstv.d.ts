@@ -1,3 +1,13 @@
+interface Application {
+    intent: {
+        extras: Record<string, any>;
+        component: {
+            packageName: string;
+            className: string;
+        };
+        action: string;
+    };
+}
 interface VolumeObject {
     current: number;
     min: number;
@@ -20,6 +30,48 @@ export interface Authentication {
     pass: string;
     sendImmediately: boolean;
 }
+export interface SystemInfo {
+    notifyChange: string;
+    menulanguage: string;
+    name: string;
+    country: string;
+    serialnumber_encrypted: string;
+    softwareversion_encrypted: string;
+    model_encrypted: string;
+    deviceid_encrypted: string;
+    nettvversion: string;
+    epgsource: string;
+    api_version: {
+        Major: number;
+        Minor: number;
+        Patch: number;
+    };
+    featuring: {
+        jsonfeatures: {
+            editfavorites: string[];
+            recordings: string[];
+            ambilight: string[];
+            menuitems: string[];
+            textentry: string[];
+            applications: string[];
+            pointer: string[];
+            inputkey: string[];
+            activities: string[];
+            channels: string[];
+            mappings: string[];
+        };
+        systemfeatures: {
+            tvtype: string;
+            content: string[];
+            tvsearch: string;
+            pairing_type: string;
+            secured_transport: string;
+            companion_screen: string;
+        };
+    };
+    os_type: string;
+}
+export declare type Input = 'HDMI 1' | 'HDMI 2' | 'HDMI 3' | 'HDMI 4' | 'WATCH TV';
 export declare type AmbilightStyle = 'FOLLOW_COLOR' | 'FOLLOW_VIDEO' | 'FOLLOW_AUDIO';
 export declare type AmbilightColorSetting = 'HOT_LAVA' | 'ISF' | 'PTA_LOUNGE' | 'FRESH_NATURE' | 'DEEP_WATER';
 export declare type AmbilightVideoSetting = 'STANDARD' | 'NATURAL' | 'VIVID' | 'GAME' | 'COMFORT' | 'RELAX';
@@ -33,6 +85,7 @@ export declare class PhilipsTVChannels {
     getObjectByCcid(ccid: string): Record<string, string>;
 }
 export declare class PhilipsTV {
+    private readonly inputMapping;
     private readonly ip;
     private readonly mac?;
     private auth?;
@@ -40,12 +93,18 @@ export declare class PhilipsTV {
     private volume?;
     private volumeMin;
     private volumeMax;
+    private systemInfo;
     private readonly apiPort;
     private readonly appName;
     tvChannels: PhilipsTVChannels;
     private readonly protocol;
     constructor(ip: string, mac?: string, auth?: Authentication, config?: PhilipsTVConfig, appName?: string);
-    info(): Promise<Record<string, unknown>>;
+    info(): Promise<SystemInfo>;
+    /**
+     * Set source if supported by the TV
+     * @param input
+     */
+    setSource(input: Input): Promise<string>;
     requiresPairing(): boolean;
     requestPair(): Promise<Record<string, unknown>>;
     authorizePair(timestamp: string, pin: string): Promise<Record<string, unknown>>;
@@ -64,7 +123,7 @@ export declare class PhilipsTV {
     setVolumePercentage(percentage: number): Promise<string>;
     setMute(muted: boolean): Promise<string>;
     sendKey(key: string): Promise<string>;
-    launchApplication(application: Record<string, string>): Promise<string>;
+    launchApplication(application: Application): Promise<string>;
     launchTVChannel(application: Record<string, string>): Promise<string>;
     setAmbilightPlusHueState(state: boolean): Promise<any>;
     getAmbilightPlusHueState(): Promise<boolean>;

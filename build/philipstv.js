@@ -57,6 +57,13 @@ class PhilipsTVChannels {
 exports.PhilipsTVChannels = PhilipsTVChannels;
 class PhilipsTV {
     constructor(ip, mac, auth, config, appName) {
+        this.inputMapping = {
+            'WATCH TV': null,
+            'HDMI 1': 'com.mediatek.tvinput/.hdmi.HDMIInputService/HW5',
+            'HDMI 2': 'com.mediatek.tvinput/.hdmi.HDMIInputService/HW6',
+            'HDMI 3': 'com.mediatek.tvinput/.hdmi.HDMIInputService/HW7',
+            'HDMI 4': 'com.mediatek.tvinput/.hdmi.HDMIInputService/HW8'
+        };
         this.volumeMin = 0;
         this.volumeMax = 0;
         if (!validate.ip.test(ip)) {
@@ -105,7 +112,32 @@ class PhilipsTV {
         const url = `${this.protocol}://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/system`;
         const result = await (0, requestHelpers_1.get)(url);
         const response = JSON.parse(result);
+        this.systemInfo = response;
         return response;
+    }
+    /**
+     * Set source if supported by the TV
+     * @param input
+     */
+    async setSource(input) {
+        var _a;
+        if (!this.systemInfo) {
+            await this.info();
+        }
+        if (!((_a = this.systemInfo) === null || _a === void 0 ? void 0 : _a.featuring.jsonfeatures.activities.includes('intent'))) {
+            throw new Error('Setting sources is not supported');
+        }
+        const intent = {
+            intent: {
+                extras: { uri: this.inputMapping[input] },
+                action: 'org.droidtv.playtv.SELECTURI',
+                component: {
+                    packageName: 'org.droidtv.playtv',
+                    className: 'org.droidtv.playtv.PlayTvActivity'
+                }
+            }
+        };
+        return this.launchApplication(intent);
     }
     requiresPairing() {
         if (this.config.apiType === 'Jointspace') {
