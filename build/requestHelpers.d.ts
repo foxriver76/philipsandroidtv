@@ -1,4 +1,5 @@
 import { Authentication } from './philipstv';
+declare type Method = 'GET' | 'POST';
 export interface RequestPayload {
     url: string;
     method: string;
@@ -9,7 +10,8 @@ export interface RequestPayload {
     auth?: Authentication;
     forever: boolean;
 }
-export declare function doRequest(method: string, url: string, body?: string, auth?: Authentication): Promise<string>;
+export declare function doRequest(method: Method, url: string, body?: string, auth?: Authentication): Promise<string>;
 export declare function get(url: string, body?: string, auth?: Authentication): Promise<string>;
 export declare function post(url: string, body?: string, auth?: Authentication): Promise<string>;
+export {};
 //# sourceMappingURL=requestHelpers.d.ts.map
