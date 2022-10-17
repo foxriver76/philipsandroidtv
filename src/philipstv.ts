@@ -89,7 +89,7 @@ export interface SystemInfo {
     os_type: string;
 }
 
-export type Input = 'HDMI 1' | 'HDMI 2' | 'HDMI 3' | 'HDMI 4' | 'WATCH TV';
+export type Input = 'HDMI 1' | 'HDMI 2' | 'HDMI 3' | 'HDMI 4';
 export type AmbilightStyle = 'FOLLOW_COLOR' | 'FOLLOW_VIDEO' | 'FOLLOW_AUDIO';
 export type AmbilightColorSetting = 'HOT_LAVA' | 'ISF' | 'PTA_LOUNGE' | 'FRESH_NATURE' | 'DEEP_WATER';
 export type AmbilightVideoSetting = 'STANDARD' | 'NATURAL' | 'VIVID' | 'GAME' | 'COMFORT' | 'RELAX';
@@ -154,11 +154,10 @@ export class PhilipsTVChannels {
 
 export class PhilipsTV {
     private readonly inputMapping = {
-        'WATCH TV': null,
-        'HDMI 1': 'com.mediatek.tvinput/.hdmi.HDMIInputService/HW5',
-        'HDMI 2': 'com.mediatek.tvinput/.hdmi.HDMIInputService/HW6',
-        'HDMI 3': 'com.mediatek.tvinput/.hdmi.HDMIInputService/HW7',
-        'HDMI 4': 'com.mediatek.tvinput/.hdmi.HDMIInputService/HW8'
+        'HDMI 1': 'content://android.media.tv/passthrough/com.mediatek.tvinput%2F.hdmi.HDMIInputService%2FHW5',
+        'HDMI 2': 'content://android.media.tv/passthrough/com.mediatek.tvinput%2F.hdmi.HDMIInputService%2FHW6',
+        'HDMI 3': 'content://android.media.tv/passthrough/com.mediatek.tvinput%2F.hdmi.HDMIInputService%2FHW7',
+        'HDMI 4': 'content://android.media.tv/passthrough/com.mediatek.tvinput%2F.hdmi.HDMIInputService%2FHW8'
     } as const;
 
     private readonly ip: string;
@@ -231,19 +230,26 @@ export class PhilipsTV {
     }
 
     /**
-     * Set source if supported by the TV
-     * @param input
+     * Checks if setSource is supported
      */
-    async setSource(input: Input): Promise<string> {
+    async supportsSetSource(): Promise<boolean> {
         if (!this.systemInfo) {
             await this.info();
         }
 
-        if (!this.systemInfo?.featuring.jsonfeatures.activities.includes('intent')) {
-            throw new Error('Setting sources is not supported');
+        return !!this.systemInfo?.featuring.jsonfeatures.activities.includes('intent');
+    }
+
+    /**
+     * Set source if supported by the TV
+     * @param input
+     */
+    async setSource(input: Input): Promise<string> {
+        if (!(await this.supportsSetSource())) {
+            throw new Error('setSource not supported by the API');
         }
 
-        const intent: Application = {
+        const app: Application = {
             intent: {
                 extras: { uri: this.inputMapping[input]! },
                 action: 'org.droidtv.playtv.SELECTURI',
@@ -254,7 +260,7 @@ export class PhilipsTV {
             }
         };
 
-        return this.launchApplication(intent);
+        return this.launchApplication(app);
     }
 
     requiresPairing(): boolean {

@@ -71,7 +71,7 @@ export interface SystemInfo {
     };
     os_type: string;
 }
-export declare type Input = 'HDMI 1' | 'HDMI 2' | 'HDMI 3' | 'HDMI 4' | 'WATCH TV';
+export declare type Input = 'HDMI 1' | 'HDMI 2' | 'HDMI 3' | 'HDMI 4';
 export declare type AmbilightStyle = 'FOLLOW_COLOR' | 'FOLLOW_VIDEO' | 'FOLLOW_AUDIO';
 export declare type AmbilightColorSetting = 'HOT_LAVA' | 'ISF' | 'PTA_LOUNGE' | 'FRESH_NATURE' | 'DEEP_WATER';
 export declare type AmbilightVideoSetting = 'STANDARD' | 'NATURAL' | 'VIVID' | 'GAME' | 'COMFORT' | 'RELAX';
@@ -100,6 +100,10 @@ export declare class PhilipsTV {
     private readonly protocol;
     constructor(ip: string, mac?: string, auth?: Authentication, config?: PhilipsTVConfig, appName?: string);
     info(): Promise<SystemInfo>;
+    /**
+     * Checks if setSource is supported
+     */
+    supportsSetSource(): Promise<boolean>;
     /**
      * Set source if supported by the TV
      * @param input

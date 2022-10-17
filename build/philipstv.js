@@ -58,11 +58,10 @@ exports.PhilipsTVChannels = PhilipsTVChannels;
 class PhilipsTV {
     constructor(ip, mac, auth, config, appName) {
         this.inputMapping = {
-            'WATCH TV': null,
-            'HDMI 1': 'com.mediatek.tvinput/.hdmi.HDMIInputService/HW5',
-            'HDMI 2': 'com.mediatek.tvinput/.hdmi.HDMIInputService/HW6',
-            'HDMI 3': 'com.mediatek.tvinput/.hdmi.HDMIInputService/HW7',
-            'HDMI 4': 'com.mediatek.tvinput/.hdmi.HDMIInputService/HW8'
+            'HDMI 1': 'content://android.media.tv/passthrough/com.mediatek.tvinput%2F.hdmi.HDMIInputService%2FHW5',
+            'HDMI 2': 'content://android.media.tv/passthrough/com.mediatek.tvinput%2F.hdmi.HDMIInputService%2FHW6',
+            'HDMI 3': 'content://android.media.tv/passthrough/com.mediatek.tvinput%2F.hdmi.HDMIInputService%2FHW7',
+            'HDMI 4': 'content://android.media.tv/passthrough/com.mediatek.tvinput%2F.hdmi.HDMIInputService%2FHW8'
         };
         this.volumeMin = 0;
         this.volumeMax = 0;
@@ -116,18 +115,24 @@ class PhilipsTV {
         return response;
     }
     /**
-     * Set source if supported by the TV
-     * @param input
+     * Checks if setSource is supported
      */
-    async setSource(input) {
+    async supportsSetSource() {
         var _a;
         if (!this.systemInfo) {
             await this.info();
         }
-        if (!((_a = this.systemInfo) === null || _a === void 0 ? void 0 : _a.featuring.jsonfeatures.activities.includes('intent'))) {
-            throw new Error('Setting sources is not supported');
+        return !!((_a = this.systemInfo) === null || _a === void 0 ? void 0 : _a.featuring.jsonfeatures.activities.includes('intent'));
+    }
+    /**
+     * Set source if supported by the TV
+     * @param input
+     */
+    async setSource(input) {
+        if (!(await this.supportsSetSource())) {
+            throw new Error('setSource not supported by the API');
         }
-        const intent = {
+        const app = {
             intent: {
                 extras: { uri: this.inputMapping[input] },
                 action: 'org.droidtv.playtv.SELECTURI',
@@ -137,7 +142,7 @@ class PhilipsTV {
                 }
             }
         };
-        return this.launchApplication(intent);
+        return this.launchApplication(app);
     }
     requiresPairing() {
         if (this.config.apiType === 'Jointspace') {
