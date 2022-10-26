@@ -289,6 +289,14 @@ class PhilipsTV {
         const ambiHueState = JSON.parse(result);
         return ambiHueState.power === 'On';
     }
+    /**
+     * Retrive the current Ambilight configuration
+     */
+    async getCurrentAmbilightConfiguration() {
+        const url = `${this.protocol}://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/ambilight/currentconfiguration`;
+        const result = await (0, requestHelpers_1.get)(url, '', this.auth);
+        return JSON.parse(result);
+    }
     async getAmbilightState() {
         const url = `${this.protocol}://${this.ip}:${this.apiPort}/${String(this.config.apiVersion)}/ambilight/power`;
         const result = await (0, requestHelpers_1.get)(url, '', this.auth);

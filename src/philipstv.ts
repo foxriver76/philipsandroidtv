@@ -21,6 +21,12 @@ interface Application {
     };
 }
 
+interface AmbilightConfiguration {
+    styleName: AmbilightStyle;
+    isExpert: boolean;
+    menuSetting: AmbilightVideoSetting | AmbilightAudioSetting;
+}
+
 interface VolumeObject {
     current: number;
     min: number;
@@ -455,6 +461,17 @@ export class PhilipsTV {
         const result = await get(url, '', this.auth!);
         const ambiHueState = JSON.parse(result);
         return ambiHueState.power === 'On';
+    }
+
+    /**
+     * Retrive the current Ambilight configuration
+     */
+    async getCurrentAmbilightConfiguration(): Promise<AmbilightConfiguration> {
+        const url = `${this.protocol}://${this.ip}:${this.apiPort}/${String(
+            this.config.apiVersion
+        )}/ambilight/currentconfiguration`;
+        const result = await get(url, '', this.auth!);
+        return JSON.parse(result);
     }
 
     async getAmbilightState(): Promise<boolean> {

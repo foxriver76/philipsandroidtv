@@ -8,6 +8,11 @@ interface Application {
         action: string;
     };
 }
+interface AmbilightConfiguration {
+    styleName: AmbilightStyle;
+    isExpert: boolean;
+    menuSetting: AmbilightVideoSetting | AmbilightAudioSetting;
+}
 interface VolumeObject {
     current: number;
     min: number;
@@ -131,6 +136,10 @@ export declare class PhilipsTV {
     launchTVChannel(application: Record<string, string>): Promise<string>;
     setAmbilightPlusHueState(state: boolean): Promise<any>;
     getAmbilightPlusHueState(): Promise<boolean>;
+    /**
+     * Retrive the current Ambilight configuration
+     */
+    getCurrentAmbilightConfiguration(): Promise<AmbilightConfiguration>;
     getAmbilightState(): Promise<boolean>;
     setAmbilightState(state: boolean, style?: AmbilightStyle, setting?: AmbilightSetting): Promise<any>;
     sendCustomAmbilightCmd(cmd: Record<string, any>): Promise<string>;
