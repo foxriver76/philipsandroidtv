@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.post = exports.get = exports.doRequest = void 0;
+exports.post = exports.get = void 0;
 const request_1 = __importDefault(require("request"));
 async function doRequest(method, url, body = '', auth) {
     return new Promise(function (resolve, reject) {
@@ -37,7 +37,6 @@ async function doRequest(method, url, body = '', auth) {
         }
     });
 }
-exports.doRequest = doRequest;
 async function get(url, body = '', auth) {
     return doRequest('GET', url, body, auth);
 }

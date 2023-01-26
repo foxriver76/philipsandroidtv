@@ -1,4 +1,4 @@
-function makeDeviceId(length: number) {
+function makeDeviceId(length: number): string {
     const result: Array<string> = [];
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     const charactersLength: number = characters.length;
@@ -9,7 +9,7 @@ function makeDeviceId(length: number) {
     return result.join('');
 }
 
-export function createUniquePairRequestPayload(appName: string) {
+export function createUniquePairRequestPayload(appName: string): Record<string, any> {
     const deviceId = makeDeviceId(16);
     const payload = {
         application_id: 'app.id',

@@ -15,17 +15,17 @@ function prepareAuthenticationRequestPayload(timestamp, pin, apiUser, apiPass, a
         auth: {
             pin: pin,
             auth_timestamp: timestamp,
-            auth_signature: hash,
+            auth_signature: hash
         },
         device: {
-            'device_name': 'heliotrope',
-            'device_os': 'Android',
-            'app_name': appName,
-            'type': 'native',
-            'app_id': 'app.id',
-            'id': apiUser,
-            'auth_key': apiPass,
-        },
+            device_name: 'heliotrope',
+            device_os: 'Android',
+            app_name: appName,
+            type: 'native',
+            app_id: 'app.id',
+            id: apiUser,
+            auth_key: apiPass
+        }
     };
 }
 exports.prepareAuthenticationRequestPayload = prepareAuthenticationRequestPayload;

@@ -3,7 +3,7 @@ import { Authentication } from './philipstv';
 
 type Method = 'GET' | 'POST';
 
-export interface RequestPayload {
+interface RequestPayload {
     url: string;
     method: string;
     body: string;
@@ -14,14 +14,14 @@ export interface RequestPayload {
     forever: boolean;
 }
 
-export async function doRequest(method: Method, url: string, body = '', auth?: Authentication): Promise<string> {
+async function doRequest(method: Method, url: string, body = '', auth?: Authentication): Promise<string> {
     return new Promise(function (this, resolve, reject) {
         const payload: RequestPayload = {
             url: url,
             method: method,
             body: body,
             rejectUnauthorized: false,
-            timeout: 5000,
+            timeout: 5_000,
             followAllRedirects: true,
             forever: method === 'GET'
         };

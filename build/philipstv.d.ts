@@ -1,3 +1,8 @@
+interface Channel {
+    ccid: string;
+    name: string;
+    object: Record<string, string>;
+}
 interface Application {
     intent: {
         extras: Record<string, any>;
@@ -145,11 +150,6 @@ export declare class PhilipsTV {
     sendCustomAmbilightCmd(cmd: Record<string, any>): Promise<string>;
     turnOn(counter?: number): Promise<void>;
     wakeUntilAPIReady(counter?: number): Promise<PowerObject | undefined>;
-}
-interface Channel {
-    ccid: string;
-    name: string;
-    object: Record<string, string>;
 }
 export {};
 //# sourceMappingURL=philipstv.d.ts.map

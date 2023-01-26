@@ -10,6 +10,12 @@ const validate = {
     pin: /^[0-9]{4}$/
 };
 
+interface Channel {
+    ccid: string;
+    name: string;
+    object: Record<string, string>;
+}
+
 interface Application {
     intent: {
         extras: Record<string, any>;
@@ -200,7 +206,7 @@ export class PhilipsTV {
                 apiVersion: 6,
                 broadcastIP: '255.255.255.255',
                 wakeOnLanRequests: 1,
-                wakeOnLanTimeout: 1000,
+                wakeOnLanTimeout: 1_000,
                 apiType: 'Android'
             };
         }
@@ -539,10 +545,4 @@ export class PhilipsTV {
             }
         }
     }
-}
-
-interface Channel {
-    ccid: string;
-    name: string;
-    object: Record<string, string>;
 }
