@@ -23,7 +23,7 @@ async function doRequest(method: Method, url: string, body = '', auth?: Authenti
             rejectUnauthorized: false,
             timeout: 5_000,
             followAllRedirects: true,
-            forever: method === 'GET'
+            forever: true
         };
 
         if (auth) {

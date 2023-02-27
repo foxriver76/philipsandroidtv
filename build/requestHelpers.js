@@ -14,7 +14,7 @@ async function doRequest(method, url, body = '', auth) {
             rejectUnauthorized: false,
             timeout: 5000,
             followAllRedirects: true,
-            forever: method === 'GET'
+            forever: true
         };
         if (auth) {
             payload.auth = auth;
